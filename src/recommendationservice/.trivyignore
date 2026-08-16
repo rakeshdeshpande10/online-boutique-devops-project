@@ -1,0 +1,9 @@
+# pyasn1 0.5.0 - fixes available in 0.6.3/0.6.4 but not yet upgraded (upstream Google dependency)
+CVE-2026-30922
+CVE-2026-59884
+CVE-2026-59885
+CVE-2026-59886
+
+# urllib3 2.6.3 - fix available in 2.7.0 but not yet upgraded (upstream Google dependency)
+CVE-2026-44431
+CVE-2026-44432

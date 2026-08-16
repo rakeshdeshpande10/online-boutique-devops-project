@@ -52,12 +52,23 @@ resource "aws_iam_role_policy_attachment" "eks_ecr_read_only_policy_attachment" 
     role       = aws_iam_role.eks_node_group_role.name
 }
 
+resource "aws_kms_key" "eks_secrets" {
+    description             = "KMS key for EKS cluster"
+}
+
 resource "aws_eks_cluster" "eks_cluster" {
     name     = var.cluster_name
     role_arn = aws_iam_role.eks_cluster_role.arn
 
     vpc_config {
         subnet_ids = var.cluster_subnet_ids
+    }
+
+    encryption_config {
+        provider {
+            key_arn = aws_kms_key.eks_secrets.arn
+        }
+        resources = ["secrets"]
     }
 
     depends_on = [
@@ -84,3 +95,4 @@ resource "aws_eks_node_group" "eks_node_group" {
         aws_iam_role_policy_attachment.eks_ecr_read_only_policy_attachment
     ]
 }
+
