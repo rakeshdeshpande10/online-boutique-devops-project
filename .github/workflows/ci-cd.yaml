@@ -1,0 +1,376 @@
+name: cicd
+on: 
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      checkoutservice: ${{ steps.filter.outputs.checkoutservice }}
+      recommendationservice: ${{ steps.filter.outputs.recommendationservice }}
+      currencyservice: ${{ steps.filter.outputs.currencyservice }}
+      adservice: ${{ steps.filter.outputs.adservice }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'src/frontend/**'
+            checkoutservice:
+              - 'src/checkoutservice/**'
+            recommendationservice:
+              - 'src/recommendationservice/**'
+            currencyservice:
+              - 'src/currencyservice/**'
+            adservice:
+              - 'src/adservice/**'
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: gitleaks/gitleaks-action@v2
+        with:
+          args: "--verbose --redact --exit-code 1"
+
+  terraform-security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'config'
+          scan-ref: 'terraform/'
+          severity: 'HIGH,CRITICAL'
+          exit-code: '1'
+
+  frontend-build:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+    defaults:
+      run:
+        working-directory: src/frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.0'
+
+      - name: Build frontend
+        run: go build -o frontend .
+
+      - name: Run frontend tests
+        run: go test ./...
+
+      - name: Lint frontend code
+        uses: golangci/golangci-lint-action@v6
+        with:
+          working-directory: src/frontend
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: docker build -t frontend:${{ github.sha }} .
+
+      - name: Trivy image scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: frontend:${{ github.sha }}
+          scan-type: 'image'
+          severity: 'HIGH,CRITICAL'
+          exit-code: '1'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Tag and push Docker image to ECR
+        run: |
+          docker tag frontend:${{ github.sha }} ${{ steps.ecr-login.outputs.registry }}/frontend:${{ github.sha }}
+          docker push ${{ steps.ecr-login.outputs.registry }}/frontend:${{ github.sha }}
+
+      - name: Update Helm values with new image tag
+        run: |
+          yq -i '.frontend.tag = "${{ github.sha }}"' ../../helm-chart/values.yaml
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add ../../helm-chart/values.yaml
+          git commit -m "Update frontend image tag to ${{ github.sha }}"
+          git pull --rebase origin main
+          git push
+
+  checkoutservice-build:
+    needs: changes
+    if: needs.changes.outputs.checkoutservice == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+    defaults:
+      run:
+        working-directory: src/checkoutservice
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.0'
+
+      - name: Build checkoutservice
+        run: go build -o checkoutservice .
+
+      - name: Run checkoutservice tests
+        run: go test ./...
+
+      - name: Lint checkoutservice code
+        uses: golangci/golangci-lint-action@v6
+        with:
+          working-directory: src/checkoutservice
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: docker build -t checkoutservice:${{ github.sha }} .
+
+      - name: Trivy image scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: checkoutservice:${{ github.sha }}
+          scan-type: 'image'
+          severity: 'HIGH,CRITICAL'
+          exit-code: '1'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Tag and push Docker image to ECR
+        run: |
+          docker tag checkoutservice:${{ github.sha }} ${{ steps.ecr-login.outputs.registry }}/checkoutservice:${{ github.sha }}
+          docker push ${{ steps.ecr-login.outputs.registry }}/checkoutservice:${{ github.sha }}
+
+      - name: Update Helm values with new image tag
+        run: |
+          yq -i '.checkoutService.tag = "${{ github.sha }}"' ../../helm-chart/values.yaml
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add ../../helm-chart/values.yaml
+          git commit -m "Update checkoutservice image tag to ${{ github.sha }}"
+          git pull --rebase origin main
+          git push
+
+  recommendationservice-build:
+    needs: changes
+    if: needs.changes.outputs.recommendationservice == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+    defaults:
+      run:
+        working-directory: src/recommendationservice
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: docker build -t recommendationservice:${{ github.sha }} . 
+
+      - name: Trivy image scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: recommendationservice:${{ github.sha }}
+          scan-type: 'image'
+          severity: 'HIGH,CRITICAL'
+          exit-code: '1'
+        
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+      
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Tag and push Docker image to ECR
+        run: |
+          docker tag recommendationservice:${{ github.sha }} ${{ steps.ecr-login.outputs.registry }}/recommendationservice:${{ github.sha }}
+          docker push ${{ steps.ecr-login.outputs.registry }}/recommendationservice:${{ github.sha }} 
+
+      - name: Update Helm values with new image tag
+        run: |
+          yq -i '.recommendationService.tag = "${{ github.sha }}"' ../../helm-chart/values.yaml
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add ../../helm-chart/values.yaml
+          git commit -m "Update recommendationservice image tag to ${{ github.sha }}"
+          git pull --rebase origin main
+          git push
+
+  currencyservice-build:
+    needs: changes
+    if: needs.changes.outputs.currencyservice == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+    defaults:
+      run:
+        working-directory: src/currencyservice
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker Buildx setup
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: docker build -t currencyservice:${{ github.sha }} .
+
+      - name: Trivy image scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: currencyservice:${{ github.sha }}
+          scan-type: 'image'
+          severity: 'HIGH,CRITICAL'
+          exit-code: '1'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Tag and push Docker image to ECR
+        run: |
+          docker tag currencyservice:${{ github.sha }} ${{ steps.ecr-login.outputs.registry }}/currencyservice:${{ github.sha }}
+          docker push ${{ steps.ecr-login.outputs.registry }}/currencyservice:${{ github.sha }} 
+
+      - name: Update Helm values with new image tag
+        run: |
+          yq -i '.currencyService.tag = "${{ github.sha }}"' ../../helm-chart/values.yaml
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add ../../helm-chart/values.yaml
+          git commit -m "Update currencyservice image tag to ${{ github.sha }}"
+          git pull --rebase origin main
+          git push  
+
+  adservice-build:
+    needs: changes
+    if: needs.changes.outputs.adservice == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+    defaults:
+      run:
+        working-directory: src/adservice
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Build adservice
+        run: |
+          chmod +x gradlew
+          ./gradlew installDist
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: docker build -t adservice:${{ github.sha }} .
+
+      - name: Trivy image scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: adservice:${{ github.sha }}
+          scan-type: 'image'
+          severity: 'HIGH,CRITICAL'
+          exit-code: '1'  
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Tag and push Docker image to ECR
+        run: |
+          docker tag adservice:${{ github.sha }} ${{ steps.ecr-login.outputs.registry }}/adservice:${{ github.sha }}
+          docker push ${{ steps.ecr-login.outputs.registry }}/adservice:${{ github.sha }} 
+
+      - name: Update Helm values with new image tag
+        run: |
+          yq -i '.adService.tag = "${{ github.sha }}"' ../../helm-chart/values.yaml
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add ../../helm-chart/values.yaml
+          git commit -m "Update adservice image tag to ${{ github.sha }}"
+          git pull --rebase origin main
+          git push
+
