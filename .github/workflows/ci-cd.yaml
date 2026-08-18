@@ -107,6 +107,7 @@ jobs:
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: us-east-1
+          role-skip-session-tagging: true
 
       - name: Login to Amazon ECR
         id: ecr-login
@@ -178,6 +179,7 @@ jobs:
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: us-east-1
+          role-skip-session-tagging: true
 
       - name: Login to Amazon ECR
         id: ecr-login
@@ -243,6 +245,7 @@ jobs:
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: us-east-1
+          role-skip-session-tagging: true
       
       - name: Login to Amazon ECR
         id: ecr-login
@@ -297,6 +300,7 @@ jobs:
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: us-east-1
+          role-skip-session-tagging: true
 
       - name: Login to Amazon ECR
         id: ecr-login
@@ -362,6 +366,7 @@ jobs:
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: us-east-1
+          role-skip-session-tagging: true
 
       - name: Login to Amazon ECR
         id: ecr-login
