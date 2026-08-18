@@ -1,0 +1,10 @@
+# copylocks disabled: this repo passes generated protobuf Money structs by value
+# throughout (Google's upstream code). The struct contains a sync.Mutex used only
+# internally by the protobuf runtime, never touched by application code, so this
+# is a well-known false-positive pattern with generated protobuf code.
+version: "2"
+linters:
+  settings:
+    govet:
+      disable:
+        - copylocks

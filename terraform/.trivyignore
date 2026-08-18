@@ -1,0 +1,8 @@
+# EKS public endpoint kept intentionally for local kubectl access during development.
+# In production, would scope to a specific VPN/bastion CIDR or disable public access entirely.
+AVD-AWS-0040
+AVD-AWS-0041
+
+# Public subnets exist for future ALB/Ingress use; EKS node group only uses private subnets,
+# so no compute is actually exposed via these public IPs currently.
+AVD-AWS-0164

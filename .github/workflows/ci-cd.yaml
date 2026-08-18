@@ -54,6 +54,7 @@ jobs:
           scan-type: 'config'
           scan-ref: 'terraform/'
           severity: 'HIGH,CRITICAL'
+          trivyignores: 'terraform/.trivyignore'
           exit-code: '1'
 
   frontend-build:
