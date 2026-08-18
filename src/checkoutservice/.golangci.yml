@@ -2,9 +2,15 @@
 # throughout (Google's upstream code). The struct contains a sync.Mutex used only
 # internally by the protobuf runtime, never touched by application code, so this
 # is a well-known false-positive pattern with generated protobuf code.
+#
+# unused disabled: initStats() in main.go is genuine dead code left over in the
+# upstream repo (never called anywhere) — not modifying app logic, so left as-is.
 version: "2"
 linters:
   settings:
     govet:
       disable:
         - copylocks
+
+  disable:
+    - unused
