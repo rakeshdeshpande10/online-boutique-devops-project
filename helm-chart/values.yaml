@@ -74,7 +74,7 @@ cartService:
 checkoutService:
   create: true
   name: checkoutservice
-  tag: "6b86c6cffa58aca9f1cb241f8d8d4fc95f2597a2"
+  tag: "4e2dfbbbbba6227fe8aca3228456a4d3c00bf850"
   resources:
     requests:
       cpu: 100m
