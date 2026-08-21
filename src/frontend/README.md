@@ -9,3 +9,5 @@ Run the following command to restore dependencies to `vendor/` directory:
 CI trigger: testing session-tagging fix
 
 CI trigger: testing session-tagging fix
+
+CI trigger: testing session-tagging fix
