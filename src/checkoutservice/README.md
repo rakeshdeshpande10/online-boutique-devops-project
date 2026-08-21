@@ -12,3 +12,5 @@ CI trigger: testing 1
 
 CI trigger: testing 2
 CI trigger: testing OIDC immutable-ID sub claim fix
+
+CI trigger: testing session-tagging fix
