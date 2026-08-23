@@ -391,6 +391,11 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git add ../../helm-chart/values.yaml
           git commit -m "Update adservice image tag to ${{ github.sha }}"
+          echo "----- DEBUG: git status before rebase -----"
+          git status
+          echo "----- DEBUG: git diff before rebase -----"
+          git diff
           git pull --rebase origin main
           git push
+
 
