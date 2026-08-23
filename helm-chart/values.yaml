@@ -85,7 +85,7 @@ checkoutService:
 currencyService:
   create: true
   name: currencyservice
-  tag: "6ad4f531f746e7826e8595c45118b31e4abe6605"
+  tag: "2acb9be4fb4bc6fe844db4f8ee582833f6fbbc42"
   resources:
     requests:
       cpu: 100m
