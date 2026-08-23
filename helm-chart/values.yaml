@@ -53,7 +53,7 @@ securityContext:
 adService:
   create: true
   name: adservice
-  tag: ""
+  tag: "3fce7d8f09c15cca3f92d0f655a57508e75dab54"
   resources:
     requests:
       cpu: 200m
