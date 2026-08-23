@@ -106,7 +106,7 @@ emailService:
 frontend:
   create: true
   name: frontend
-  tag: "0f46fe35b58e89ebae3bab6a80a7686af911bffe"
+  tag: "fa78697b7768eb8101bf33ce4613a6dc2fa1652c"
   externalService: true
   cymbalBranding: false
   # One of: local, gcp, aws, azure, onprem, alibaba. When not set, defaults to "local" unless running in GKE, otherwise auto-sets to gcp.
