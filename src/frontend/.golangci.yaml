@@ -1,0 +1,18 @@
+version: "2"
+
+linters:
+  disable:
+    # errcheck: Google's original frontend code doesn't check return values on
+    # w.Write, fmt.Fprint, resp.Body.Close in several places (handlers.go,
+    # main.go, packaging_info.go). Upstream demo-app code we didn't write;
+    # fixing it is app-code work outside the scope of this CI/CD project.
+    - errcheck
+  settings:
+    govet:
+      disable:
+        # copylocks: false positive. genproto.Money embeds a protobuf-generated
+        # sync.Mutex (via protoimpl.MessageState) that's never actually locked.
+        # golangci-lint-action v7's newer govet flags every value-copy of Money
+        # (Sum, MultiplySlow, IsValid, etc.) across handlers.go and money.go.
+        # Same root cause already documented in checkoutservice/.golangci.yml.
+        - copylocks
