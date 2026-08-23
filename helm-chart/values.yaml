@@ -164,7 +164,7 @@ productCatalogService:
 recommendationService:
   create: true
   name: recommendationservice
-  tag: "fa78697b7768eb8101bf33ce4613a6dc2fa1652c"
+  tag: "a848652a996e22a1f4c15d394c94474e3c311714"
   resources:
     requests:
       cpu: 100m
