@@ -110,7 +110,7 @@ frontend:
   create: true
   name: frontend
   repository: 494770748818.dkr.ecr.us-east-1.amazonaws.com/frontend
-  tag: "3c553b870abe50079cb5dc22c294148def12d9d1"
+  tag: "3c682043e918179fd7ec2e16b3ab825ffc31873c"
   externalService: true
   cymbalBranding: false
   # One of: local, gcp, aws, azure, onprem, alibaba. When not set, defaults to "local" unless running in GKE, otherwise auto-sets to gcp.
