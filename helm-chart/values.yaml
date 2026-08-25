@@ -53,6 +53,7 @@ securityContext:
 adService:
   create: true
   name: adservice
+  repository: 494770748818.dkr.ecr.us-east-1.amazonaws.com/adservice
   tag: "3c553b870abe50079cb5dc22c294148def12d9d1"
   resources:
     requests:
@@ -74,6 +75,7 @@ cartService:
 checkoutService:
   create: true
   name: checkoutservice
+  repository: 4494770748818.dkr.ecr.us-east-1.amazonaws.com/checkoutservice
   tag: "3c553b870abe50079cb5dc22c294148def12d9d1"
   resources:
     requests:
@@ -85,6 +87,7 @@ checkoutService:
 currencyService:
   create: true
   name: currencyservice
+  repository: 494770748818.dkr.ecr.us-east-1.amazonaws.com/currencyservice
   tag: "3c553b870abe50079cb5dc22c294148def12d9d1"
   resources:
     requests:
@@ -106,6 +109,7 @@ emailService:
 frontend:
   create: true
   name: frontend
+  repository: 494770748818.dkr.ecr.us-east-1.amazonaws.com/frontend
   tag: "3c553b870abe50079cb5dc22c294148def12d9d1"
   externalService: true
   cymbalBranding: false
@@ -164,6 +168,7 @@ productCatalogService:
 recommendationService:
   create: true
   name: recommendationservice
+  repository: 494770748818.dkr.ecr.us-east-1.amazonaws.com/recommendationservice
   tag: "3c553b870abe50079cb5dc22c294148def12d9d1"
   resources:
     requests:
