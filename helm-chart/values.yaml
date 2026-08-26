@@ -75,7 +75,7 @@ cartService:
 checkoutService:
   create: true
   name: checkoutservice
-  repository: 4494770748818.dkr.ecr.us-east-1.amazonaws.com/checkoutservice
+  repository: 494770748818.dkr.ecr.us-east-1.amazonaws.com/checkoutservice
   tag: "3c682043e918179fd7ec2e16b3ab825ffc31873c"
   resources:
     requests:
