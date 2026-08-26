@@ -76,7 +76,7 @@ checkoutService:
   create: true
   name: checkoutservice
   repository: 494770748818.dkr.ecr.us-east-1.amazonaws.com/checkoutservice
-  tag: "3c682043e918179fd7ec2e16b3ab825ffc31873c"
+  tag: "2348c0b3edf8bfef41e7f627e465361d599d0c49"
   resources:
     requests:
       cpu: 100m
