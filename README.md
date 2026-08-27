@@ -83,8 +83,7 @@ A few of the real problems hit while building this, since a pipeline that "just 
 The frontend is exposed via a Kubernetes `Service` of type `LoadBalancer`. On EKS this provisions a **Classic Load Balancer** automatically through the cluster's cloud-controller-manager — this happens outside Terraform, since it's a Kubernetes-native resource, not a Terraform-managed one. A natural next step would be installing the [AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/) and switching to an `Ingress` resource for ALB-based routing.
 
 ## Screenshots
-| Github Actions | Pods | 
-|---|---|---|
+
 | ![CI](./docs/img/CI.png) | ![pods](./docs/img/pods.png) |
 
 ## Future improvements
