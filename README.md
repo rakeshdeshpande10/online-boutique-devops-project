@@ -84,7 +84,7 @@ The frontend is exposed via a Kubernetes `Service` of type `LoadBalancer`. On EK
 
 ## Screenshots
 
-| ![CI](./docs/img/CI pipeline.png) | ![ArgoCD](./docs/img/Argo CD.png) | ![pods](./docs/img/pods.png) |
+| ![CI](./docs/img/CI.png) | ![ArgoCD](./docs/img/ArgoCD.png) | ![pods](./docs/img/pods.png) |
 
 ## Future improvements
 
