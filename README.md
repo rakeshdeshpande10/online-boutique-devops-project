@@ -14,7 +14,7 @@ The application code itself (all 11 microservices) is Google's, licensed under A
 
 ## Architecture
 
-| ![Architecture](/docs/img/cicd_eks_architecture.png) |
+![Architecture](/docs/img/cicd_eks_architecture.png)
 
 Terraform provisions the VPC (4 subnets across 2 AZs, NAT/IGW), the EKS cluster and node group, 5 ECR repositories, and a GitHub OIDC provider + IAM role scoped to this repo — so GitHub Actions authenticates to AWS without stored credentials.
 
@@ -84,7 +84,7 @@ The frontend is exposed via a Kubernetes `Service` of type `LoadBalancer`. On EK
 
 ## Screenshots
 
-*(Add captured screenshots here — homepage, checkout flow, GitHub Actions run, Argo CD sync view)*
+| ![CI](./docs/img/CI pipeline.png) | ![ArgoCD](./docs/img/Argo CD.png) | ![pods](./docs/img/pods.png) |
 
 ## Future improvements
 
