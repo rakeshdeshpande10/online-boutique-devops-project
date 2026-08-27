@@ -169,7 +169,7 @@ recommendationService:
   create: true
   name: recommendationservice
   repository: 494770748818.dkr.ecr.us-east-1.amazonaws.com/recommendationservice
-  tag: "2348c0b3edf8bfef41e7f627e465361d599d0c49"
+  tag: "8bad60d265cb577013dcd3902ecfe172977a0dbe"
   resources:
     requests:
       cpu: 100m
